@@ -113,7 +113,7 @@ JSlider.prototype = {
 function showMainDisplay(slider){
     var pos = slider.current + 1;
     slider.display.html('<img src="' + 
-      slider.imgPath + pos + '.jpg" alt="' + pos + 
+      slider.imgPath + pos + '.png" alt="' + pos + 
         '" width="352" height="356" class="show_img" />');
 }
 
@@ -155,7 +155,7 @@ function displayPreview(slider, direction){
       // 루프를 돌 때 위치로 같이 세팅한다.
       for(i=0,len = slider.preview_setting.length; i < len ;i++){
       str += '<a href="#none" class="img"><img src="' +
-          slider.imgPath + i + '.jpg" alt="' + slider.preview_setting[i] + '" width="57" height="60" /></a>';
+          slider.imgPath + i + '.png" alt="' + slider.preview_setting[i] + '" width="57" height="60" /></a>';
     }
       
       slider.preview.addClass('invisible');
@@ -167,6 +167,8 @@ function displayPreview(slider, direction){
           'left' : 73*el + 'px'
         });
       }
+
+      // callback을 사용하여 내부에서 두 번 돌고 있는 루프를 하나로 변경할 수 있을까?
       
       slider.preview.removeClass('invisible');
     }else if(slider.animate){ // in case supporting animation
@@ -184,7 +186,7 @@ function displayPreview(slider, direction){
       // 루프를 돌 때 위치를 함께 세팅해준다.
       for(i=1,len = slider.total; i <= len ;i++){
       str += '<a href="#none" class="img"><img src="' +
-          slider.imgPath + i + '.jpg" alt="' + i + '" width="57" height="60" /></a>';
+          slider.imgPath + i + '.png" alt="' + i + '" width="57" height="60" /></a>';
     }
       
       // 순서대로 입력한 후에 위치를 조정한다.
@@ -294,13 +296,14 @@ var slider = new JSlider({
 	current : 0,
 	next : 1,
 	prev : null,
-	imgPath : "../assets/images/slider/",
-      btnPrev : $(".prev-btn"),
-      btnNext : $(".next-btn"),
-      display : $(".simpleSlider .item"),
-      preview : $(".preview-thumbnail"),
-      loop : true,
-      animate : true // true일 경우 animate효과를 통하여 이동될 수 있도록 변경한다.
+	imgPath : "img/",
+  imgType : 'png', // 구현중...
+  btnPrev : $(".prev-btn"),
+  btnNext : $(".next-btn"),
+  display : $(".simpleSlider .item"),
+  preview : $(".preview-thumbnail"),
+  loop : true,
+  animate : true // true일 경우 animate효과를 통하여 이동될 수 있도록 변경한다. 구현중...
 });
 
 

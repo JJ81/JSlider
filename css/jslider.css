@@ -834,7 +834,7 @@ h4.tit a{
   display:inline-block;
   text-indent: -999em;
   overflow:hidden;
-  background:transparent url(../images/slider/slider-btn.gif) no-repeat 0 0;
+  background:transparent url(../img/slider-btn.gif) no-repeat 0 0;
   border:1px solid #f00;
 }
 
@@ -847,7 +847,7 @@ h4.tit a{
   display:inline-block;
   text-indent: -999em;
   overflow:hidden;
-  background:transparent url(../images/slider/slider-btn.gif) no-repeat 0 0;
+  background:transparent url(../img/slider-btn.gif) no-repeat 0 0;
   border:1px solid #f00;
 }
 
@@ -860,7 +860,7 @@ h4.tit a{
   display:inline-block;
   text-indent: -999em;
   overflow:hidden;
-  background:transparent url(../images/slider/slider-btn.gif) no-repeat -63px 0;
+  background:transparent url(../img/slider-btn.gif) no-repeat -63px 0;
   border:1px solid #f00;
 }
 
@@ -873,7 +873,7 @@ h4.tit a{
   display:inline-block;
   text-indent: -999em;
   overflow:hidden;
-  background:transparent url(../images/slider/slider-btn.gif) no-repeat -63px 0;
+  background:transparent url(../img/slider-btn.gif) no-repeat -63px 0;
   border:1px solid #f00;
 }
 
