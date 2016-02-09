@@ -1,6 +1,6 @@
 <h1># JSlider</h1>
-<p>simple slider</p>
-<b>Option</b>
+<p>Simple Image Slider</p>
+<b>Options</b>
 <pre>
 var slider = new JSlider({
 	total : 8,
