@@ -1,4 +1,8 @@
-/* 슬라이더 생성자 */
+/* 
+    Simple JSlider  
+    version : 1.0
+    date : 2016.01.01
+*/
 function JSlider(settings){
   this.total = settings.total;
   this.prev = settings.prev;
@@ -23,7 +27,7 @@ function JSlider(settings){
 }
 
 JSlider.prototype = {
-  goPrev : function () {
+  goPrev : function (callback) {
     if(!this.loop || this.loop === null){
       if(this.current-1 > 0){
       	this.prev = this.prev-1;
@@ -41,7 +45,6 @@ JSlider.prototype = {
       	this.next = 1;
       } 
     }else{ // loop true
-
       // 음수로 변경 (왼쪽으로 이동중)
       if(this.prev <= 0){
         this.prev = this.total-1;
@@ -61,9 +64,13 @@ JSlider.prototype = {
         this.current--;  
       }
     }
+    
+    if(typeof callback === 'function'){
+        callback();
+    }
   },
   
-  goNext : function () {
+  goNext : function (callback) {
     if(!this.loop || this.loop === null){
       if(this.current+1 < this.total-1){
       	this.prev = this.current;
@@ -76,7 +83,6 @@ JSlider.prototype = {
       }  
     }else{ // loop true
         // 양수로 변경 (오른쪽으로 이동중)
-        
         if(this.prev >= this.total-1){
           this.prev = 0;
         }else{
@@ -94,6 +100,10 @@ JSlider.prototype = {
         }else{
           this.current++;  
         }
+    }
+    
+    if(typeof callback === 'function'){
+        callback();
     }
   },
   
@@ -113,68 +123,74 @@ JSlider.prototype = {
 };
 
 
-function showMainDisplay(slider){
+function showMainDisplay(slider, callback){
     var pos = slider.current + 1;
     slider.display.html('<img src="' + slider.imgPath + pos + "." + slider.imgType + 
         '" alt="' + pos + '" width="352" height="356" class="show_img" />');
+    if(typeof callback === 'function'){
+        callback();
+    }
 }
 
-
+/*
+    @instance slider
+    @direction right or left
+*/
 function displayPreview(slider, direction){
-  var str = "", i;
+    var str = "", i;
     
     if(!slider.animate){
-      if(slider.preview_setting.length <= 0 || slider.preview_setting === null){
-        slider.preview_setting = [
-          slider.current+1 >= slider.total+1 ? Math.abs(slider.current+1-slider.total) : slider.current+1, 
-          slider.current+2 >= slider.total+1 ? Math.abs(slider.current+2-slider.total) : slider.current+2, 
-          slider.current+3 >= slider.total+1 ? Math.abs(slider.current+3-slider.total) : slider.current+3
-        ];
-      }else{
-        if(direction === 'next'){ // 다음으로 이동할 경우
-          var tmp = slider.preview_setting[1];
-          slider.preview_setting = 
-          [
-            tmp >= slider.total+1 ? Math.abs(tmp-slider.total) : tmp, 
-            tmp+1 >= slider.total+1 ? Math.abs(tmp+1-slider.total) : tmp+1,
-            tmp+2 >= slider.total+1 ? Math.abs(tmp+2-slider.total) : tmp+2
-          ];
-
-        }else if(direction === 'prev'){ // 이전으로 이동할 경우
-          var tmp2 = slider.preview_setting[1];
-          slider.preview_setting = 
-          [
-            tmp2-2 < 1 ? Math.abs(slider.total+tmp2-2) : tmp2-2,
-            tmp2-1 < 1 ? Math.abs(slider.total+tmp2-1) : tmp2-1,
-            tmp2 < 1 ? Math.abs(slider.total+1-tmp2) : tmp2
-          ];
-        
+        if(slider.preview_setting.length <= 0 || slider.preview_setting === null){
+            slider.preview_setting = [
+                slider.current+1 >= slider.total+1 ? Math.abs(slider.current+1-slider.total) : slider.current+1, 
+                slider.current+2 >= slider.total+1 ? Math.abs(slider.current+2-slider.total) : slider.current+2, 
+                slider.current+3 >= slider.total+1 ? Math.abs(slider.current+3-slider.total) : slider.current+3
+            ];
         }else{
-          throw new Error('Where am I??');
+            if(direction === 'next'){
+                var tmp = slider.preview_setting[1];
+                slider.preview_setting = 
+                [
+                tmp >= slider.total+1 ? Math.abs(tmp-slider.total) : tmp, 
+                tmp+1 >= slider.total+1 ? Math.abs(tmp+1-slider.total) : tmp+1,
+                tmp+2 >= slider.total+1 ? Math.abs(tmp+2-slider.total) : tmp+2
+                ];
+
+            }else if(direction === 'prev'){
+                var tmp2 = slider.preview_setting[1];
+                slider.preview_setting = 
+                [
+                tmp2-2 < 1 ? Math.abs(slider.total+tmp2-2) : tmp2-2,
+                tmp2-1 < 1 ? Math.abs(slider.total+tmp2-1) : tmp2-1,
+                tmp2 < 1 ? Math.abs(slider.total+1-tmp2) : tmp2
+                ];
+            
+            }else{
+                throw new Error('Where am I??');
+            }
         }
-      }
       
-    var set = slider.preview_setting;
-    for(i=0;i<set.length;i++){
-        str += '<a href="#none" class="img"><img src="' + slider.imgPath+set[i] + "." + 
-            slider.imgType +'" alt="' + set[i] + '" width="57" height="60" /></a>';
-    }
+        var set = slider.preview_setting;
+        for(i=0;i<set.length;i++){ // 스트링 변수에 덮어 쓰는 방법보다 효율적인 방법은 무엇일까?
+            
+            str += '<a href="#none" class="img"><img src="' + slider.imgPath+set[i] + "." + 
+                slider.imgType +'" alt="' + set[i] + '" width="57" height="60" /></a>';
+                
+            
+        }
 
-      slider.preview.addClass('invisible');
-      slider.preview.html(str);
-      
-      // 여기서 위치를 조정한다. 결국 여기서 또 루프를 돌게 된다. 이를 피할 수 있는 방법이 있을까?
-      for(var el=0;el<slider.preview_setting.length;el++){
-        $('.img').eq(el).css({
-          'left' : 73*el + 'px'
-        });
-      }
+        slider.preview.addClass('invisible');
+        slider.preview.html(str);
 
-      // callback을 사용하여 내부에서 두 번 돌고 있는 루프를 하나로 변경할 수 있을까?
-      
-      slider.preview.removeClass('invisible');  
-    }
-    
+        // 여기서 위치를 조정한다. 결국 여기서 또 루프를 돌게 된다. 이를 피할 수 있는 방법이 있을까?
+        for(var el=0;el<slider.preview_setting.length;el++){
+            $('.img').eq(el).css({
+                'left' : 73*el + 'px'
+            });
+        }
+
+        slider.preview.removeClass('invisible');  
+    } 
     else if(slider.animate){ // in case supporting animation
       /* 
         나열할 썸네일을 그린다. 
@@ -188,10 +204,11 @@ function displayPreview(slider, direction){
       */
       
         // 일단은 0부터 시작해서 나열한 상태로 한다.
+        // 초기 설정에 맞게 해당 위치를 설정하여 가장 첫번째 위치하도록 한다.
         if(slider.preview_setting.length === 0){
             for(var el=1;el<=slider.total;el++){
                 slider.preview_setting.push(el);
-            }    
+            }
         }
 
         var set = slider.preview_setting;
@@ -201,59 +218,65 @@ function displayPreview(slider, direction){
         }
         
       
-      // 순서대로 입력한 후에 위치를 조정한다.
-      // DOM에 삽입하기 전에 위치를 조정한다.
-      // preview-thumbnail의 넓이를 세팅한다.
-      // 안에 있는 a태그를 세팅한다.
-      // 위치를 세팅하기 위해서는 각각의 이미지 썸네일을 탐색하려면 돔에 집어 넣어야 한다.
-      // 이 때문에 미리 넣은 다음 보여줄 수 있도록 해야 한다.
-      // invisible을 넣어주었다가 모든 처리가 완료되면 invisible을 제거한다.
+        // 순서대로 입력한 후에 위치를 조정한다.
+        // DOM에 삽입하기 전에 위치를 조정한다.
+        // preview-thumbnail의 넓이를 세팅한다.
+        // 안에 있는 a태그를 세팅한다.
+        // 위치를 세팅하기 위해서는 각각의 이미지 썸네일을 탐색하려면 돔에 집어 넣어야 한다.
+        // 이 때문에 미리 넣은 다음 보여줄 수 있도록 해야 한다.
+        // invisible을 넣어주었다가 모든 처리가 완료되면 invisible을 제거한다.
+        
+        slider.preview.addClass('invisible');
+        slider.preview.html(str);
+        
+        // 넣은 후에 탐색할 것.
+        for(var ele=0;ele<slider.total;ele++){
+            $('.img').eq(ele).css({
+                'left' : 72*ele + 'px'
+            });
+        }
       
-      slider.preview.addClass('invisible');
-      slider.preview.html(str);
-      
-      // 넣은 후에 탐색할 것.
-      for(var ele=0;ele<slider.total;ele++){
-        $('.img').eq(ele).css({
-          'left' : 72*ele + 'px'
-        });
-      }
-      
-      // 첫 위치를 조정할 것. direction을 받아서 해당 방향으로 한칸씩 이동한다.
-      // 맨 끝에 도달했을 경우 반대쪽에서 하나를 떼어서 옮기고 이동시킨다. 항상 끝쪽에 더이상 갈 수 없을 경우를 판단하여 DOM을 떼어다가 이동시켜야 한다. 만약 그럴필요가 없을 경우 해당 액션은 생략해야 한다.
-      
-    //   console.log('do animate!!' + slider.preview_setting.toString());
-      
-      
-      // 모든 처리가 완료될 경우 보여줄 것.
-      slider.preview.removeClass('invisible');
-    }
+        // 첫 위치를 조정할 것. direction을 받아서 해당 방향으로 한칸씩 이동한다.
+        // 보여주기 전에 위치를 세팅할 것.
+        // slider.preview.css({
+        //     'left' : '-' + 72*slider.current + 'px'
+        // });
 
-  
+        // 모든 처리가 완료될 경우 보여줄 것.
+        slider.preview.removeClass('invisible');
+    }
 }
 
 
 // @ current와 함께 위치를 찍어주자.??
-function setPointerOnPreview(slider, direction){
+function setPointerOnPreview(slider, direction, callback){
     
     slider.preview.find("img").removeClass("selected");
 
     if(direction === null){ // 초기화
-      slider.preview.find("img")
-        .eq(slider.currentPreview).addClass("selected");
-      return;
+        if(typeof callback === 'function')
+            callback(slider, direction); // displayPreview
+            
+        slider.preview.find("img").eq(slider.currentPreview).addClass("selected");
+        return;
     }
     
-    //
+
     if(!slider.animate){
         if(direction === "next" && slider.currentPreview === 2){
             slider.preview.find("img").eq(2).addClass("selected");
             slider.currentPreview = 2;
-            displayPreview(slider, "next");
+            
+            if(typeof callback === 'function')
+                callback(slider, direction); // displayPreview
+            
         }else if(direction === "prev" && slider.currentPreview === 0){
             slider.preview.find("img").eq(0).addClass("selected");
             slider.currentPreview = 0;
-            displayPreview(slider, "prev");
+            
+            if(typeof callback ==='function')
+                callback(slider, direction); // displayPreview
+            
         }else{
             if(direction === "prev"){
                 slider.currentPreview--;
@@ -277,11 +300,7 @@ function setPointerOnPreview(slider, direction){
                     'left' : '-' + slider.preview_pos + 'px'
                 }, slider.animateDuration);    
             }
-            
-            
-            // console.log(slider.currentPreview);
-            console.log('pos : ' + slider.preview_pos);
-            
+
         }else if(direction === 'prev' && slider.current+1 < slider.total-2){
             // 첫번째 썸네일에 포인터가 있고 이전 버튼을 누를 경우 이동하고 포인터도 변경.
             if((Math.abs(slider.preview_pos / 72)+1) === slider.current+2){
@@ -290,14 +309,7 @@ function setPointerOnPreview(slider, direction){
                     'left' : '-' + slider.preview_pos + 'px'
                 },slider.animateDuration);    
             }
-        }
-        
-        // console.log( 'front count : ' + Math.abs(slider.preview_pos / 72) );
-        // console.log('thumb 1 : ' + (Math.abs(slider.preview_pos / 72)+1) ); 
-        // console.log('thumb 2 : ' + (Math.abs(slider.preview_pos / 72)+2) );
-        // console.log('thumb 3 : ' + (Math.abs(slider.preview_pos / 72)+3) );
-        // console.log('current pos : ' + (slider.current+1) );
- 
+        } 
     }
 }
 
@@ -325,17 +337,13 @@ function controlButton(slider){
 /*
   데이터를 기반으로 뷰가 수정이 될 수 있도록 할 것.
   데이터의 변경이 없으면 뷰의 변경도 없다.
-
 */
-
 function initialize(slider){ // 이 부분을 prototype에 등록할 것.
     if(slider.total >= 3){
-      
-      displayPreview(slider, "next");
-      showMainDisplay(slider);
-      setPointerOnPreview(slider, null);
+      showMainDisplay(slider, function () {
+        setPointerOnPreview(slider, null, displayPreview); 
+      });
       controlButton(slider);
-
     }else{
       throw new Error("총 이미지는 3개 이상 등록이 되어야 한다.");
     }
@@ -345,6 +353,16 @@ function initialize(slider){ // 이 부분을 prototype에 등록할 것.
 /* 
     JSlider 
     옵션을 설정하지 않았을 경우 기본값 설정할 것.
+    TODO
+    1. total 이미지 설정
+    2. current -> start로 설정하면 next와 prev 값을 자동으로 처리헤준다.
+    3. start가 변경되면 해당 위치에서 모든 기능들이 제대로 기능하다록 한다.
+    4. loop && animate가 모두 활성화되었을 경우, 제대로 기능하도록 한다.
+    5. 중복 loop를 없앤다.
+    6. 테스트 코드를 작성한다.
+    7. turn view after initialization or loading
+    8. in clicking the thumbnail in one of three.
+    9. delegate 'controlButton' to some function and make it work after....
 */
 var slider = new JSlider({
 	total : 8,
@@ -370,24 +388,27 @@ initialize(slider); // initialize를 할 경우 뷰가 나타날 수 있도록 �
 // Binding event with button
 slider.btnPrev.bind("click", function () {
     var target = slider;
-    target.goPrev();
+    target.goPrev(function () {
+        showMainDisplay(target, function () {
+            setPointerOnPreview(target, "prev", displayPreview); 
+        });
+        controlButton(target); // 버튼이 보여야 하는지 여부를 판단하는 것은 다른 곳에 위임할 것.    
+    });
 
-    showMainDisplay(target);
-    setPointerOnPreview(target, "prev");
-    controlButton(target); // 버튼이 보여야 하는지 여부를 판단하는 것은 다른 곳에 위임할 것.
-    
     target.getStatus();
     return false;
 });
 
 slider.btnNext.bind("click", function () {
     var target = slider;
-    target.goNext();
-    
-    showMainDisplay(target);
-    setPointerOnPreview(target, "next");
-    controlButton(target); // 버튼이 보여야 하는지 여부를 판단하는 것은 다른 곳에 위임할 것.
-    
+    target.goNext(function () {
+        showMainDisplay(target, function () {
+            setPointerOnPreview(target, "next", displayPreview);
+        });
+        
+        controlButton(target); // 버튼이 보여야 하는지 여부를 판단하는 것은 다른 곳에 위임할 것.    
+    });
+
     target.getStatus();
     return false;
 });
