@@ -835,7 +835,6 @@ h4.tit a{
   text-indent: -999em;
   overflow:hidden;
   background:transparent url(../img/slider-btn.gif) no-repeat 0 0;
-  border:1px solid #f00;
 }
 
 .prev-btn2{
@@ -848,7 +847,6 @@ h4.tit a{
   text-indent: -999em;
   overflow:hidden;
   background:transparent url(../img/slider-btn.gif) no-repeat 0 0;
-  border:1px solid #f00;
 }
 
 .next-btn{
@@ -861,7 +859,6 @@ h4.tit a{
   text-indent: -999em;
   overflow:hidden;
   background:transparent url(../img/slider-btn.gif) no-repeat -63px 0;
-  border:1px solid #f00;
 }
 
 .next-btn2{
@@ -874,7 +871,6 @@ h4.tit a{
   text-indent: -999em;
   overflow:hidden;
   background:transparent url(../img/slider-btn.gif) no-repeat -63px 0;
-  border:1px solid #f00;
 }
 
 .preview-thumbnail .selected{
@@ -900,7 +896,7 @@ h4.tit a{
 .preview_wrp{
   width:210px;
   height:66px;
-  border:1px solid #f00;
+  /*border:1px solid #f00;*/
   position:relative;
   left:76px;
 overflow:hidden;
@@ -911,7 +907,7 @@ overflow:hidden;
   height:66px;
   top:0;
   left:0;
-  border:1px solid #f00;
+  /*border:1px solid #f00;*/
 }
 
 .preview-thumbnail:after{
