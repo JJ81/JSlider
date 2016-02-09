@@ -12,6 +12,7 @@ function JSlider(settings){
   this.btnNext = settings.btnNext;
   this.display = settings.display; // displayWrapper
   this.preview = settings.preview; // previewWrapper
+  this.preview_pos = 0;
   this.preview_setting = [];
   
   this.loop = settings.loop;
@@ -172,7 +173,8 @@ function displayPreview(slider, direction){
       slider.preview.removeClass('invisible');
       
       
-    }else if(slider.animate){ // in case supporting animation
+    }
+    else if(slider.animate){ // in case supporting animation
       /* 
         나열할 썸네일을 그린다. 
         total개수를 모두 그릴 것인데 어디서부터 그리는가가 중요하다. 
@@ -184,11 +186,25 @@ function displayPreview(slider, direction){
         
       */
       
-      // 루프를 돌 때 위치를 함께 세팅해준다.
-      for(i=1,len = slider.total; i <= len ;i++){
-      str += '<a href="#none" class="img"><img src="' +
-          slider.imgPath + i + '.png" alt="' + i + '" width="57" height="60" /></a>';
-    }
+        // 일단은 0부터 시작해서 나열한 상태로 한다.
+        if(slider.preview_setting.length === 0){
+            for(var el=1;el<=slider.total;el++){
+                slider.preview_setting.push(el);
+            }    
+        }
+        
+      
+        // 루프를 돌 때 위치를 함께 세팅해준다.
+        //   for(i=1,len = slider.total; i <= len ;i++){
+        //     str += '<a href="#none" class="img"><img src="' +
+        //         slider.imgPath + i + '.png" alt="' + i + '" width="57" height="60" /></a>';
+        //   }
+        var set = slider.preview_setting;
+        for(i=0;i<set.length;i++){
+            str += '<a href="#none" class="img"><img src="' +
+                slider.imgPath + set[i] + '.png" alt="' + set[i] + '" width="57" height="60" /></a>';
+        }
+        
       
       // 순서대로 입력한 후에 위치를 조정한다.
       // DOM에 삽입하기 전에 위치를 조정한다.
@@ -211,7 +227,7 @@ function displayPreview(slider, direction){
       // 첫 위치를 조정할 것. direction을 받아서 해당 방향으로 한칸씩 이동한다.
       // 맨 끝에 도달했을 경우 반대쪽에서 하나를 떼어서 옮기고 이동시킨다. 항상 끝쪽에 더이상 갈 수 없을 경우를 판단하여 DOM을 떼어다가 이동시켜야 한다. 만약 그럴필요가 없을 경우 해당 액션은 생략해야 한다.
       
-      
+      console.log('do animate!!' + slider.preview_setting.toString());
       
       
       // 모든 처리가 완료될 경우 보여줄 것.
@@ -221,9 +237,10 @@ function displayPreview(slider, direction){
   
 }
 
-  
-  // @ current와 함께 위치를 찍어주자.??
+
+// @ current와 함께 위치를 찍어주자.??
 function setPointerOnPreview(slider, direction){
+    
     slider.preview.find("img").removeClass("selected");
 
     if(direction === null){ // 초기화
@@ -232,24 +249,60 @@ function setPointerOnPreview(slider, direction){
       return;
     }
     
-    if(direction === "next" && slider.currentPreview === 2){
-      slider.preview.find("img").eq(2).addClass("selected");
-      slider.currentPreview = 2;
-      displayPreview(slider, "next");
-    }else if(direction === "prev" && slider.currentPreview === 0){
-      slider.preview.find("img").eq(0).addClass("selected");
-      slider.currentPreview = 0;
-      displayPreview(slider, "prev");
-    }else{
-      if(direction === "prev"){
-        slider.currentPreview--;
-      }else{
-        slider.currentPreview++;
-      }
+    //
+    if(!slider.animate){
+        if(direction === "next" && slider.currentPreview === 2){
+            slider.preview.find("img").eq(2).addClass("selected");
+            slider.currentPreview = 2;
+            displayPreview(slider, "next");
+        }else if(direction === "prev" && slider.currentPreview === 0){
+            slider.preview.find("img").eq(0).addClass("selected");
+            slider.currentPreview = 0;
+            displayPreview(slider, "prev");
+        }else{
+            if(direction === "prev"){
+                slider.currentPreview--;
+            }else{
+                slider.currentPreview++;
+            }
+        }
+            
+        slider.preview.find("img").eq(slider.currentPreview).addClass("selected");    
+    }else if(slider.animate){
+        
+        slider.preview.find("img").eq(slider.current).addClass("selected");
+        
+        if(direction === 'next' && slider.current > 2){
+            // 세번째 썸네일에 포인터가 있고 다음 버튼을 누를 경우 오른쪽으로 이동
+            if((Math.abs(slider.preview_pos / 72)+3) === slider.current){
+                console.log('do animate right direction');
+                slider.preview_pos += 72;
+                slider.preview.stop().animate({
+                    'left' : '-' + slider.preview_pos + 'px'
+                });    
+            }
+            
+            
+            // console.log(slider.currentPreview);
+            console.log('pos : ' + slider.preview_pos);
+            
+        }else if(direction === 'prev' && slider.current+1 < slider.total-2){
+            // 첫번째 썸네일에 포인터가 있고 이전 버튼을 누를 경우 이동하고 포인터도 변경.
+            if((Math.abs(slider.preview_pos / 72)+1) === slider.current+2){
+                slider.preview_pos -= 72;
+                slider.preview.stop().animate({
+                    'left' : '-' + slider.preview_pos + 'px'
+                });    
+            }
+        }
+        
+        // console.log( 'front count : ' + Math.abs(slider.preview_pos / 72) );
+        // console.log('thumb 1 : ' + (Math.abs(slider.preview_pos / 72)+1) ); 
+        // console.log('thumb 2 : ' + (Math.abs(slider.preview_pos / 72)+2) );
+        // console.log('thumb 3 : ' + (Math.abs(slider.preview_pos / 72)+3) );
+        // console.log('current pos : ' + (slider.current+1) );
+ 
     }
-    
-    slider.preview.find("img")
-      .eq(slider.currentPreview).addClass("selected");
 }
 
   
@@ -306,7 +359,8 @@ var slider = new JSlider({
     display : $(".simpleSlider .item"),
     preview : $(".preview-thumbnail"),
     loop : false, // animate을 true로 할 경우와 분리되어 생각해야 함.
-    animate : false // true일 경우 animate효과를 통하여 이동될 수 있도록 변경한다. 구현중...
+    animate : true, // true일 경우 animate효과를 통하여 이동될 수 있도록 변경한다. 구현중...
+    animateAction : '' // 어떤 움직임을 적용할 것인가
 });
 
 
