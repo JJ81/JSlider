@@ -14,6 +14,7 @@ var slider = new JSlider({
   display : $(".simpleSlider .item"),
   preview : $(".preview-thumbnail"),
   loop : false,
-  animate : false
+  animate : false,
+  animateType : ''
 });
 </pre>
