@@ -1,7 +1,7 @@
 <h1># JSlider</h1>
 <p>simple slider</p>
 <b>Option</b>
-<code>
+<pre>
 var slider = new JSlider({ <br />
 	total : 8, <br />
 	current : 0, <br />
@@ -16,4 +16,4 @@ var slider = new JSlider({ <br />
   loop : false, <br />
   animate : false <br />
 }); <br />
-</code>
+</pre>
