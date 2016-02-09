@@ -5,6 +5,7 @@ function JSlider(settings){
   this.current = settings.current;
   this.next = settings.next;
   this.imgPath = settings.imgPath;
+  this.imgType = settings.imgType;
   // current pointer on the preview (0,1,2)
   this.currentPreview = settings.current; 
   
@@ -17,6 +18,8 @@ function JSlider(settings){
   
   this.loop = settings.loop;
   this.animate = settings.animate;
+  this.animateDuration = settings.animateDuration;
+  this.animateType = settings.animateType;
 }
 
 JSlider.prototype = {
@@ -112,14 +115,13 @@ JSlider.prototype = {
 
 function showMainDisplay(slider){
     var pos = slider.current + 1;
-    slider.display.html('<img src="' + 
-      slider.imgPath + pos + '.png" alt="' + pos + 
-        '" width="352" height="356" class="show_img" />');
+    slider.display.html('<img src="' + slider.imgPath + pos + "." + slider.imgType + 
+        '" alt="' + pos + '" width="352" height="356" class="show_img" />');
 }
 
 
 function displayPreview(slider, direction){
-  var str = "", i, len;
+  var str = "", i;
     
     if(!slider.animate){
       if(slider.preview_setting.length <= 0 || slider.preview_setting === null){
@@ -154,8 +156,8 @@ function displayPreview(slider, direction){
       
     var set = slider.preview_setting;
     for(i=0;i<set.length;i++){
-        str += '<a href="#none" class="img"><img src="' +
-          slider.imgPath+set[i] + '.png" alt="' + set[i] + '" width="57" height="60" /></a>';
+        str += '<a href="#none" class="img"><img src="' + slider.imgPath+set[i] + "." + 
+            slider.imgType +'" alt="' + set[i] + '" width="57" height="60" /></a>';
     }
 
       slider.preview.addClass('invisible');
@@ -170,10 +172,9 @@ function displayPreview(slider, direction){
 
       // callback을 사용하여 내부에서 두 번 돌고 있는 루프를 하나로 변경할 수 있을까?
       
-      slider.preview.removeClass('invisible');
-      
-      
+      slider.preview.removeClass('invisible');  
     }
+    
     else if(slider.animate){ // in case supporting animation
       /* 
         나열할 썸네일을 그린다. 
@@ -192,17 +193,11 @@ function displayPreview(slider, direction){
                 slider.preview_setting.push(el);
             }    
         }
-        
-      
-        // 루프를 돌 때 위치를 함께 세팅해준다.
-        //   for(i=1,len = slider.total; i <= len ;i++){
-        //     str += '<a href="#none" class="img"><img src="' +
-        //         slider.imgPath + i + '.png" alt="' + i + '" width="57" height="60" /></a>';
-        //   }
+
         var set = slider.preview_setting;
         for(i=0;i<set.length;i++){
-            str += '<a href="#none" class="img"><img src="' +
-                slider.imgPath + set[i] + '.png" alt="' + set[i] + '" width="57" height="60" /></a>';
+            str += '<a href="#none" class="img"><img src="' + slider.imgPath + set[i] + "." + 
+                slider.imgType + '" alt="' + set[i] + '" width="57" height="60" /></a>';
         }
         
       
@@ -227,7 +222,7 @@ function displayPreview(slider, direction){
       // 첫 위치를 조정할 것. direction을 받아서 해당 방향으로 한칸씩 이동한다.
       // 맨 끝에 도달했을 경우 반대쪽에서 하나를 떼어서 옮기고 이동시킨다. 항상 끝쪽에 더이상 갈 수 없을 경우를 판단하여 DOM을 떼어다가 이동시켜야 한다. 만약 그럴필요가 없을 경우 해당 액션은 생략해야 한다.
       
-      console.log('do animate!!' + slider.preview_setting.toString());
+    //   console.log('do animate!!' + slider.preview_setting.toString());
       
       
       // 모든 처리가 완료될 경우 보여줄 것.
@@ -275,11 +270,12 @@ function setPointerOnPreview(slider, direction){
         if(direction === 'next' && slider.current > 2){
             // 세번째 썸네일에 포인터가 있고 다음 버튼을 누를 경우 오른쪽으로 이동
             if((Math.abs(slider.preview_pos / 72)+3) === slider.current){
-                console.log('do animate right direction');
+                // console.log('do animate right direction');
+                
                 slider.preview_pos += 72;
                 slider.preview.stop().animate({
                     'left' : '-' + slider.preview_pos + 'px'
-                });    
+                }, slider.animateDuration);    
             }
             
             
@@ -292,7 +288,7 @@ function setPointerOnPreview(slider, direction){
                 slider.preview_pos -= 72;
                 slider.preview.stop().animate({
                     'left' : '-' + slider.preview_pos + 'px'
-                });    
+                },slider.animateDuration);    
             }
         }
         
@@ -346,21 +342,25 @@ function initialize(slider){ // 이 부분을 prototype에 등록할 것.
 }
 
 
-/* slider */
+/* 
+    JSlider 
+    옵션을 설정하지 않았을 경우 기본값 설정할 것.
+*/
 var slider = new JSlider({
 	total : 8,
 	current : 0,
 	next : 1,
 	prev : null,
 	imgPath : "img/",
-    imgType : 'png', // 구현중...
+    imgType : 'png',
     btnPrev : $(".prev-btn"),
     btnNext : $(".next-btn"),
     display : $(".simpleSlider .item"),
     preview : $(".preview-thumbnail"),
-    loop : false, // animate을 true로 할 경우와 분리되어 생각해야 함.
-    animate : true, // true일 경우 animate효과를 통하여 이동될 수 있도록 변경한다. 구현중...
-    animateAction : '' // 어떤 움직임을 적용할 것인가
+    loop : false, // animate && loop 일 경우 처리할 것.
+    animate : true,
+    animateDuration : 300,
+    animateType : ''
 });
 
 
