@@ -32,7 +32,7 @@ function JSlider(settings){
 
 JSlider.prototype = {
   goPrev : function (callback) {
-    if(!this.loop || this.loop === null){
+    if(!this.loop || this.loop === null){ // loop false
       if(this.current-1 > 0){
       	this.prev = this.prev-1;
       	this.current  = this.current - 1;
@@ -346,7 +346,7 @@ initialize(slider); // initialize를 할 경우 뷰가 나타날 수 있도록 �
 // Binding event with button
 slider.btnPrev.bind("click", function () {
     var target = slider;
-    target.goPrev(function () {
+    target.goPrev(function () { // 만약 이 모든 것을 goPrev에 정의한다면??
         showMainDisplay(target, function () {
             setPointerOnPreview(target, "prev", displayPreview); 
         });
